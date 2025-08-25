@@ -18,12 +18,19 @@ Este projeto foi construído com uma abordagem moderna e sem a necessidade de um
 - **TypeScript**: Para adicionar tipagem estática e segurança ao código.
 - **Tailwind CSS**: Para estilização rápida e responsiva, carregado via CDN.
 - **ES Modules Nativos + Import Maps**: Permite o uso de `import` diretamente no navegador, buscando os pacotes de uma CDN (`esm.sh`).
+- **Babel Standalone**: Transpila o código TSX/JSX em tempo real, no navegador, permitindo a publicação em hosts estáticos sem um processo de build.
 
 ---
 
 ## 🚀 Como Publicar no GitHub Pages
 
 Siga estes passos para colocar sua aplicação no ar de graça com o GitHub Pages.
+
+### ⚠️ Nota Importante Sobre a Publicação (Porque não precisa de "deploy")
+
+Sua aplicação usa arquivos `.tsx` (TypeScript com React/JSX), que os navegadores não conseguem ler diretamente. Para que funcione no GitHub Pages, adicionamos uma ferramenta chamada **Babel Standalone**. Ela é carregada no `index.html` e converte seu código `.tsx` para JavaScript puro que o navegador entende, tudo isso de forma automática quando a página é carregada.
+
+Por isso, você **não precisa** de um passo de "build" ou compilação no seu computador. O processo de publicação continua o mesmo: basta enviar os arquivos para o GitHub!
 
 ### Passo 1: Crie um Repositório no GitHub
 
