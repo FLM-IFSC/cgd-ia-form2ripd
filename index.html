@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IFSC - Mapeamento de Processos LGPD</title>
+    
+    <!-- Carrega o Tailwind CSS via CDN para estilização rápida e utilitária -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Configuração personalizada do Tailwind para estender o tema padrão
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              // Adiciona cores personalizadas para a identidade visual do IFSC
+              'ifsc-green': '#00844f',
+              'ifsc-green-dark': '#006a3e',
+            }
+          }
+        }
+      }
+    </script>
+
+  <!-- 
+    Import Map: Permite usar importações de módulos ES6 diretamente no navegador 
+    sem a necessidade de um bundler como Webpack ou Vite.
+    Mapeia nomes de pacotes (ex: 'react') para suas URLs completas em uma CDN.
+  -->
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.1/",
+    "react": "https://esm.sh/react@^19.1.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.1/",
+    "react-toastify/": "https://esm.sh/react-toastify@^11.0.5/",
+    "react-toastify": "https://esm.sh/react-toastify@^11.0.5"
+  }
+}
+</script>
+</head>
+  <body class="bg-gray-100">
+    <!-- O elemento 'root' é o container onde a aplicação React será montada -->
+    <div id="root"></div>
+    <!-- 
+      O script principal da aplicação é carregado como um módulo (`type="module"`),
+      o que permite o uso da sintaxe `import`/`export`.
+    -->
+    <script type="module" src="./index.tsx"></script>
+  </body>
+</html>
