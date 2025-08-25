@@ -5,21 +5,12 @@
  * Permite a visualização e o download do rascunho em formato de texto.
  */
 import React from 'react';
-import { ProcessoData } from '../types.js';
 import { DocumentTextIcon, XIcon, DownloadIcon } from './icons/Icons.js';
-
-// Props esperadas pelo componente RipdPreviewModal.
-interface RipdPreviewModalProps {
-  /** Os dados do processo de alto risco a serem exibidos no RIPD. */
-  processo: ProcessoData;
-  /** Função de callback para fechar o modal. */
-  onClose: () => void;
-}
 
 /**
  * Subcomponente para estruturar o conteúdo do RIPD em seções com título.
  */
-const RipdSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+const RipdSection = ({ title, children }) => (
     <div className="mb-6">
         <h3 className="text-lg font-bold text-gray-700 border-b-2 border-ifsc-green pb-1 mb-2">{title}</h3>
         <div className="text-gray-600 prose prose-sm max-w-none">{children}</div>
@@ -29,11 +20,11 @@ const RipdSection: React.FC<{ title: string; children: React.ReactNode }> = ({ t
 /**
  * Subcomponente para exibir um par de 'label' e 'valor' dentro de uma seção do RIPD.
  */
-const RipdField: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
+const RipdField = ({ label, value }) => (
     <p><strong>{label}:</strong> {value || <span className="text-gray-400">Não informado</span>}</p>
 );
 
-const RipdPreviewModal: React.FC<RipdPreviewModalProps> = ({ processo, onClose }) => {
+const RipdPreviewModal = ({ processo, onClose }) => {
     
     /**
      * Gera o conteúdo textual do rascunho do RIPD a partir dos dados do processo.
@@ -141,7 +132,7 @@ const RipdPreviewModal: React.FC<RipdPreviewModalProps> = ({ processo, onClose }
             <RipdSection title="4. Base Legal">
                  <RipdField label="Base Legal para Tratamento" value={processo.baseLegal} />
                  <RipdField label="Previsão Legal Específica" value={processo.previsaoLegal} />
-            </HipdSection>
+            </RipdSection>
 
             <RipdSection title="5. Ciclo de Vida do Dado">
                  <RipdField label="Fonte dos Dados" value={processo.fonteDados} />

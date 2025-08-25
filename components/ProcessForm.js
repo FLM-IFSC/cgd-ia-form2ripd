@@ -5,19 +5,12 @@
  * Possui lógica para renderizar campos condicionalmente.
  */
 
-import React, { useState, FormEvent } from 'react';
-import { ProcessoData, CompartilhamentoDetalhe } from '../types.js';
+import React, { useState } from 'react';
 import { BASES_LEGAIS, CATEGORIAS_DADOS_SENSIVEIS, CATEGORIAS_TITULARES } from '../constants.js';
 import { PlusIcon, TrashIcon } from './icons/Icons.js';
 
-// Props esperadas pelo componente ProcessForm.
-interface ProcessFormProps {
-  /** Função de callback a ser executada quando o formulário é submetido com sucesso. */
-  onSubmit: (data: ProcessoData) => void;
-}
-
 // Estado inicial do formulário, usado para preencher e resetar os campos.
-const initialFormData: ProcessoData = {
+const initialFormData = {
   nomeProcesso: '',
   unidadeSetor: '',
   gestorProcesso: 'Usuário Logado (Exemplo)', // Pré-preenchido como exemplo
@@ -43,7 +36,7 @@ const initialFormData: ProcessoData = {
 /**
  * Subcomponente para agrupar campos do formulário em seções lógicas.
  */
-const FormSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+const FormSection = ({ title, children }) => (
   <div className="p-5 border border-gray-200 rounded-lg bg-white mb-6">
     <h3 className="text-lg font-semibold text-ifsc-green border-b border-gray-200 pb-2 mb-4">{title}</h3>
     <div className="space-y-4">{children}</div>
@@ -53,7 +46,7 @@ const FormSection: React.FC<{ title: string; children: React.ReactNode }> = ({ t
 /**
  * Subcomponente reutilizável para um campo de input padrão.
  */
-const InputField: React.FC<{ label: string; id: string; name: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; type?: string; required?: boolean; placeholder?: string; }> = 
+const InputField = 
   ({ label, id, name, value, onChange, type = 'text', required = false, placeholder }) => (
   <div>
     <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
@@ -64,7 +57,7 @@ const InputField: React.FC<{ label: string; id: string; name: string; value: str
 /**
  * Subcomponente reutilizável para um campo de textarea.
  */
-const TextareaField: React.FC<{ label: string; id: string; name: string; value: string; onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void; required?: boolean; rows?: number; placeholder?: string; }> =
+const TextareaField =
  ({ label, id, name, value, onChange, required = false, rows = 3, placeholder }) => (
   <div>
     <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
@@ -76,7 +69,7 @@ const TextareaField: React.FC<{ label: string; id: string; name: string; value: 
 /**
  * Subcomponente reutilizável para um grupo de botões de rádio (Sim/Não).
  */
-const RadioGroup: React.FC<{ label: string; name: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; required?: boolean }> =
+const RadioGroup =
  ({ label, name, value, onChange, required = false }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
@@ -90,9 +83,8 @@ const RadioGroup: React.FC<{ label: string; name: string; value: string; onChang
 /**
  * Subcomponente reutilizável para um grupo de checkboxes.
  */
-const CheckboxGroup: React.FC<{ label: string; options: string[]; selected: string[]; onChange: (selected: string[]) => void; required?: boolean; }> = 
-({ label, options, selected, onChange, required = false }) => {
-    const handleCheckboxChange = (option: string) => {
+const CheckboxGroup = ({ label, options, selected, onChange, required = false }) => {
+    const handleCheckboxChange = (option) => {
         const newSelection = selected.includes(option)
             ? selected.filter(item => item !== option)
             : [...selected, option];
@@ -116,7 +108,7 @@ const CheckboxGroup: React.FC<{ label: string; options: string[]; selected: stri
 /**
  * Subcomponente reutilizável para um campo de seleção (dropdown).
  */
-const SelectField: React.FC<{ label: string; id: string; name: string; value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; options: string[]; required?: boolean; }> =
+const SelectField =
  ({ label, id, name, value, onChange, options, required = false }) => (
     <div>
         <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
@@ -128,23 +120,23 @@ const SelectField: React.FC<{ label: string; id: string; name: string; value: st
 );
 
 
-const ProcessForm: React.FC<ProcessFormProps> = ({ onSubmit }) => {
+const ProcessForm = ({ onSubmit }) => {
   // Estado que armazena todos os dados do formulário.
-  const [formData, setFormData] = useState<ProcessoData>(initialFormData);
+  const [formData, setFormData] = useState(initialFormData);
 
   // Manipulador genérico para campos de input, textarea e select.
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   // Manipulador específico para grupos de checkboxes.
-  const handleCheckboxChange = (name: keyof ProcessoData, selected: string[]) => {
+  const handleCheckboxChange = (name, selected) => {
       setFormData(prev => ({...prev, [name]: selected}));
   }
   
   // Manipulador para atualizar os detalhes de compartilhamento (tabela dinâmica).
-  const handleCompartilhamentoChange = (index: number, field: 'orgao' | 'finalidade', value: string) => {
+  const handleCompartilhamentoChange = (index, field, value) => {
     const newDetails = [...formData.detalhesCompartilhamento];
     newDetails[index] = { ...newDetails[index], [field]: value };
     setFormData(prev => ({ ...prev, detalhesCompartilhamento: newDetails }));
@@ -159,7 +151,7 @@ const ProcessForm: React.FC<ProcessFormProps> = ({ onSubmit }) => {
   };
 
   // Remove uma linha da seção de compartilhamento pelo seu ID.
-  const removeCompartilhamento = (id: number) => {
+  const removeCompartilhamento = (id) => {
     setFormData(prev => ({
       ...prev,
       detalhesCompartilhamento: prev.detalhesCompartilhamento.filter(item => item.id !== id)
@@ -167,7 +159,7 @@ const ProcessForm: React.FC<ProcessFormProps> = ({ onSubmit }) => {
   };
 
   // Manipula o evento de submissão do formulário.
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault(); // Previne o recarregamento da página.
     onSubmit(formData); // Chama a função de callback passada por props.
     setFormData(initialFormData); // Reseta o formulário para o estado inicial.

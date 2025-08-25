@@ -4,8 +4,7 @@
  * e o processo selecionado para a visualização do RIPD. Orquestra a interação entre os
  * componentes de formulário, tabela e modal.
  */
-import React, { useState } from 'react';
-import { ProcessoData } from './types.js';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header.js';
 import ProcessForm from './components/ProcessForm.js';
 import InventoryTable from './components/InventoryTable.js';
@@ -19,105 +18,34 @@ import { ToastContainer, toast } from 'react-toastify';
  * Essencial para ambientes sem um empacotador de módulos (bundler) que não conseguem
  * processar `import 'arquivo.css';`.
  */
-const StyleInjector: React.FC = () => {
-    React.useEffect(() => {
+const StyleInjector = () => {
+    useEffect(() => {
         const style = document.createElement('style');
         style.textContent = `
-.Toastify__toast-container {
-}
-.Toastify__toast {
-}
-.Toastify__toast--rtl {
-  direction: rtl;
-}
-.Toastify__toast-body {
-}
-.Toastify__progress-bar {
-}
-.Toastify__progress-bar--rtl {
-  right: 0;
-  left: auto;
-  transform-origin: right;
-}
-.Toastify__progress-bar-theme--light {
-  background: #757575;
-}
-.Toastify__progress-bar-theme--dark {
-  background: #bbbbbb;
-}
-.Toastify__progress-bar-theme--colored.Toastify__progress-bar--info {
-  background: #3498db;
-}
-.Toastify__progress-bar-theme--colored.Toastify__progress-bar--success {
-  background: #07bc0c;
-}
-.Toastify__progress-bar-theme--colored.Toastify__progress-bar--warning {
-  background: #f1c40f;
-}
-.Toastify__progress-bar-theme--colored.Toastify__progress-bar--error {
-  background: #e74c3c;
-}
-
-@keyframes Toastify__trackProgress {
-  0% {
-    transform: scaleX(1);
-  }
-  100% {
-    transform: scaleX(0);
-  }
-}
-.Toastify__progress-bar--animated {
-  animation: Toastify__trackProgress linear 1;
-}
-
-.Toastify__close-button {
-  color: #fff;
-  background: transparent;
-  outline: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: 0.3s ease;
-  align-self: flex-start;
-}
-.Toastify__close-button--default {
-  color: #000;
-  opacity: 0.3;
-}
-.Toastify__close-button > svg {
-  fill: currentColor;
-  height: 16px;
-  width: 14px;
-}
-.Toastify__close-button:hover, .Toastify__close-button:focus {
-  opacity: 1;
-}
-
+.Toastify__toast-container {}
+.Toastify__toast {}
+.Toastify__toast--rtl { direction: rtl; }
+.Toastify__toast-body {}
+.Toastify__progress-bar {}
+.Toastify__progress-bar--rtl { right: 0; left: auto; transform-origin: right; }
+.Toastify__progress-bar-theme--light { background: #757575; }
+.Toastify__progress-bar-theme--dark { background: #bbbbbb; }
+.Toastify__progress-bar-theme--colored.Toastify__progress-bar--info { background: #3498db; }
+.Toastify__progress-bar-theme--colored.Toastify__progress-bar--success { background: #07bc0c; }
+.Toastify__progress-bar-theme--colored.Toastify__progress-bar--warning { background: #f1c40f; }
+.Toastify__progress-bar-theme--colored.Toastify__progress-bar--error { background: #e74c3c; }
+@keyframes Toastify__trackProgress { 0% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+.Toastify__progress-bar--animated { animation: Toastify__trackProgress linear 1; }
+.Toastify__close-button { color: #fff; background: transparent; outline: none; border: none; padding: 0; cursor: pointer; opacity: 0.7; transition: 0.3s ease; align-self: flex-start; }
+.Toastify__close-button--default { color: #000; opacity: 0.3; }
+.Toastify__close-button > svg { fill: currentColor; height: 16px; width: 14px; }
+.Toastify__close-button:hover, .Toastify__close-button:focus { opacity: 1; }
 @media only screen and (max-width: 480px) {
-  .Toastify__toast-container {
-    width: 100vw;
-    padding: 0;
-    left: 0;
-    margin: 0;
-  }
-  .Toastify__toast-container--top-left, .Toastify__toast-container--top-center, .Toastify__toast-container--top-right {
-    top: 0;
-    transform: translateX(0);
-  }
-  .Toastify__toast-container--bottom-left, .Toastify__toast-container--bottom-center, .Toastify__toast-container--bottom-right {
-    bottom: 0;
-    transform: translateX(0);
-  }
-  .Toastify__toast-container--rtl {
-    right: 0;
-    left: auto;
-  }
-
-  .Toastify__toast {
-    margin-bottom: 0;
-    border-radius: 0;
-  }
+  .Toastify__toast-container { width: 100vw; padding: 0; left: 0; margin: 0; }
+  .Toastify__toast-container--top-left, .Toastify__toast-container--top-center, .Toastify__toast-container--top-right { top: 0; transform: translateX(0); }
+  .Toastify__toast-container--bottom-left, .Toastify__toast-container--bottom-center, .Toastify__toast-container--bottom-right { bottom: 0; transform: translateX(0); }
+  .Toastify__toast-container--rtl { right: 0; left: auto; }
+  .Toastify__toast { margin-bottom: 0; border-radius: 0; }
 }
         `;
         document.head.appendChild(style);
@@ -129,17 +57,17 @@ const StyleInjector: React.FC = () => {
     return null;
 };
 
-const App: React.FC = () => {
+const App = () => {
   // Estado para armazenar a lista de processos mapeados (o inventário de dados).
-  const [inventario, setInventario] = useState<ProcessoData[]>([]);
+  const [inventario, setInventario] = useState([]);
   // Estado para controlar a exibição do modal de RIPD. Armazena os dados do processo de alto risco selecionado.
-  const [selectedProcessForRipd, setSelectedProcessForRipd] = useState<ProcessoData | null>(null);
+  const [selectedProcessForRipd, setSelectedProcessForRipd] = useState(null);
 
   /**
    * Manipula a submissão do formulário de processo.
    * @param data Os dados do processo preenchidos no formulário.
    */
-  const handleFormSubmit = (data: ProcessoData) => {
+  const handleFormSubmit = (data) => {
     // Adiciona um ID único ao novo processo.
     const newData = { ...data, id: Date.now() };
     // Adiciona o novo processo ao estado do inventário.

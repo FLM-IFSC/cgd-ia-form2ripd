@@ -6,7 +6,7 @@
 import React from 'react';
 import { ShieldCheckIcon } from './icons/Icons.js';
 
-const Header: React.FC = () => {
+const Header = () => {
   return (
     <header className="bg-ifsc-green text-white shadow-md">
       <div className="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">

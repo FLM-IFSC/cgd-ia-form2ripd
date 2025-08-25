@@ -42,8 +42,7 @@
 
 <!--
   Babel Standalone: Essencial para a publicação sem um passo de "build".
-  Esta biblioteca transpila o código TSX/JSX para JavaScript puro diretamente no navegador,
-  permitindo que a aplicação React funcione em ambientes de hospedagem estática como o GitHub Pages.
+  Esta biblioteca transpila o código JSX para JavaScript puro diretamente no navegador.
 -->
 <script src="https://unpkg.com/@babel/standalone@7.24.0/babel.min.js"></script>
 
@@ -55,11 +54,11 @@
     <!-- 
       Ponto de entrada da aplicação React.
       O código importa o módulo App.js e é marcado como "text/babel".
-      O atributo "data-presets" instrui o Babel a usar as transformações
-      necessárias para TypeScript e React, resolvendo o problema de sintaxe
-      e o de MIME type do GitHub Pages de forma definitiva.
+      O atributo "data-presets" instrui o Babel a usar a transformação
+      necessária para JSX. Como o código agora é JS puro, o preset de typescript
+      foi removido, garantindo a estabilidade.
     -->
-    <script type="text/babel" data-type="module" data-presets="react,typescript">
+    <script type="text/babel" data-type="module" data-presets="react">
       import React from 'react';
       import ReactDOM from 'react-dom/client';
       import App from './App.js';
