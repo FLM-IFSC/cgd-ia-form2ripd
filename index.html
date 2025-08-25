@@ -54,14 +54,15 @@
 
     <!-- 
       Ponto de entrada da aplicação React.
-      O código é colocado diretamente no HTML (inline) e marcado como "text/babel"
-      para ser transpilado pelo Babel Standalone. Isso contorna o problema de 
-      MIME type do GitHub Pages com arquivos .tsx, garantindo que a aplicação carregue.
+      O código importa o módulo App.js e é marcado como "text/babel".
+      O atributo "data-presets" instrui o Babel a usar as transformações
+      necessárias para TypeScript e React, resolvendo o problema de sintaxe
+      e o de MIME type do GitHub Pages de forma definitiva.
     -->
-    <script type="text/babel" data-type="module">
+    <script type="text/babel" data-type="module" data-presets="react,typescript">
       import React from 'react';
       import ReactDOM from 'react-dom/client';
-      import App from './App.tsx';
+      import App from './App.js';
 
       const rootElement = document.getElementById('root');
       if (!rootElement) {

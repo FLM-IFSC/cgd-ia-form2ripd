@@ -26,14 +26,14 @@ Este projeto foi construído com uma abordagem moderna e sem a necessidade de um
 
 Siga estes passos para colocar sua aplicação no ar de graça com o GitHub Pages.
 
-### ⚠️ Nota Importante Sobre a Publicação (Porque não precisa de "deploy")
+### ⚠️ A Solução Definitiva para a Publicação (Porque Funciona Agora)
 
-Para que a aplicação, escrita em TypeScript (`.tsx`), funcione diretamente em um navegador sem um passo de compilação ("build"), este projeto utiliza uma abordagem inteligente:
+Para que uma aplicação escrita em TypeScript (`.tsx`/`.ts`) funcione diretamente em um navegador sem um passo de compilação ("build"), especialmente no GitHub Pages, foi implementada uma solução robusta:
 
-1.  **Babel Standalone**: Uma ferramenta é carregada no `index.html` que converte seu código `.tsx` para JavaScript puro que o navegador entende, tudo isso de forma automática quando a página é carregada.
-2.  **Script de Entrada Inline**: O ponto de partida da aplicação foi movido de um arquivo `index.tsx` para dentro de uma tag `<script>` no próprio `index.html`. Isso resolve um problema técnico com o GitHub Pages, que não reconhece a extensão `.tsx` e impedia o carregamento do arquivo.
+1.  **Renomeação para `.js`**: Todos os arquivos de código-fonte (`.tsx`, `.ts`) foram renomeados para `.js`. Isso é crucial porque o servidor do GitHub Pages reconhece a extensão `.js` e a envia ao navegador com o "MIME type" correto (`text/javascript`), **eliminando o erro que causava a tela em branco**.
+2.  **Configuração do Babel**: Mesmo com a extensão `.js`, os arquivos ainda contêm sintaxe de TypeScript e JSX. Para que o navegador entenda isso, o Babel Standalone foi configurado no `index.html` para usar os "presets" (pré-configurações) de `react` e `typescript`. Isso garante que todo o código seja transpilado corretamente em tempo real, no navegador.
 
-Com essa configuração, o processo de publicação é extremamente simples: **basta enviar os arquivos para o GitHub**.
+Com essa configuração, o processo de publicação é o mais simples possível: **basta enviar os arquivos para o GitHub**.
 
 ### Passo 1: Crie um Repositório no GitHub
 
@@ -45,11 +45,13 @@ Com essa configuração, o processo de publicação é extremamente simples: **b
 
 ### Passo 2: Envie os Arquivos para o Repositório
 
-Agora, você precisa enviar todos os arquivos da aplicação (`index.html`, `App.tsx`, etc.) para o repositório que você acabou de criar. Você pode fazer isso via linha de comando com `git` ou usando o GitHub Desktop.
+Agora, você precisa enviar todos os arquivos da aplicação (`index.html`, `App.js`, etc.) para o repositório que você acabou de criar.
 
-Se você não tem familiaridade com `git`, a forma mais simples é:
+**Importante**: Certifique-se de que os arquivos `.tsx` e `.ts` antigos foram **deletados** e substituídos pelos novos arquivos `.js`.
+
+Você pode fazer o upload via linha de comando com `git` ou usando o GitHub Desktop. Se não tiver familiaridade, a forma mais simples é:
 1.  No seu repositório no GitHub, clique em **"Add file"** e depois em **"Upload files"**.
-2.  Arraste todos os arquivos do projeto para a área de upload.
+2.  Arraste todos os novos arquivos do projeto para a área de upload.
 3.  Adicione uma mensagem de commit (ex: "Commit inicial do projeto") e clique em **"Commit changes"**.
 
 ### Passo 3: Ative o GitHub Pages
