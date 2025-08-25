@@ -5,11 +5,11 @@
  * componentes de formulário, tabela e modal.
  */
 import React, { useState } from 'react';
-import { ProcessoData } from './types';
-import Header from './components/Header';
-import ProcessForm from './components/ProcessForm';
-import InventoryTable from './components/InventoryTable';
-import RipdPreviewModal from './components/RipdPreviewModal';
+import { ProcessoData } from './types.ts';
+import Header from './components/Header.tsx';
+import ProcessForm from './components/ProcessForm.tsx';
+import InventoryTable from './components/InventoryTable.tsx';
+import RipdPreviewModal from './components/RipdPreviewModal.tsx';
 import { ToastContainer, toast } from 'react-toastify';
 
 /**

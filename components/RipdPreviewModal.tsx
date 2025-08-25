@@ -5,8 +5,8 @@
  * Permite a visualização e o download do rascunho em formato de texto.
  */
 import React from 'react';
-import { ProcessoData } from '../types';
-import { DocumentTextIcon, XIcon, DownloadIcon } from './icons/Icons';
+import { ProcessoData } from '../types.ts';
+import { DocumentTextIcon, XIcon, DownloadIcon } from './icons/Icons.tsx';
 
 // Props esperadas pelo componente RipdPreviewModal.
 interface RipdPreviewModalProps {

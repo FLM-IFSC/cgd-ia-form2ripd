@@ -4,7 +4,7 @@
  * Exibe o título, subtítulo e a identidade visual do IFSC.
  */
 import React from 'react';
-import { ShieldCheckIcon } from './icons/Icons';
+import { ShieldCheckIcon } from './icons/Icons.tsx';
 
 const Header: React.FC = () => {
   return (

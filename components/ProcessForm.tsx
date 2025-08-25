@@ -6,9 +6,9 @@
  */
 
 import React, { useState, FormEvent } from 'react';
-import { ProcessoData, CompartilhamentoDetalhe } from '../types';
-import { BASES_LEGAIS, CATEGORIAS_DADOS_SENSIVEIS, CATEGORIAS_TITULARES } from '../constants';
-import { PlusIcon, TrashIcon } from './icons/Icons';
+import { ProcessoData, CompartilhamentoDetalhe } from '../types.ts';
+import { BASES_LEGAIS, CATEGORIAS_DADOS_SENSIVEIS, CATEGORIAS_TITULARES } from '../constants.ts';
+import { PlusIcon, TrashIcon } from './icons/Icons.tsx';
 
 // Props esperadas pelo componente ProcessForm.
 interface ProcessFormProps {

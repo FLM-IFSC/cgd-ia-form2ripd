@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { ProcessoData } from '../types';
-import { TableIcon, CheckCircleIcon, ExclamationIcon } from './icons/Icons';
+import { ProcessoData } from '../types.ts';
+import { TableIcon, CheckCircleIcon, ExclamationIcon } from './icons/Icons.tsx';
 
 // Props esperadas pelo componente InventoryTable.
 interface InventoryTableProps {
