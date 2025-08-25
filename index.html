@@ -51,10 +51,29 @@
   <body class="bg-gray-100">
     <!-- O elemento 'root' é o container onde a aplicação React será montada -->
     <div id="root"></div>
+
     <!-- 
-      O script principal da aplicação é carregado com `type="text/babel"` para que
-      o Babel Standalone possa transpilá-lo antes da execução.
+      Ponto de entrada da aplicação React.
+      O código é colocado diretamente no HTML (inline) e marcado como "text/babel"
+      para ser transpilado pelo Babel Standalone. Isso contorna o problema de 
+      MIME type do GitHub Pages com arquivos .tsx, garantindo que a aplicação carregue.
     -->
-    <script type="text/babel" data-type="module" src="./index.tsx"></script>
+    <script type="text/babel" data-type="module">
+      import React from 'react';
+      import ReactDOM from 'react-dom/client';
+      import App from './App.tsx';
+
+      const rootElement = document.getElementById('root');
+      if (!rootElement) {
+        throw new Error("Could not find root element to mount to");
+      }
+
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+    </script>
   </body>
 </html>

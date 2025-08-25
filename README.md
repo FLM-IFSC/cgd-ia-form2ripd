@@ -28,15 +28,12 @@ Siga estes passos para colocar sua aplicação no ar de graça com o GitHub Page
 
 ### ⚠️ Nota Importante Sobre a Publicação (Porque não precisa de "deploy")
 
-Sua aplicação usa arquivos `.tsx` (TypeScript com React/JSX), que os navegadores não conseguem ler diretamente. Para que funcione no GitHub Pages, adicionamos uma ferramenta chamada **Babel Standalone**. Ela é carregada no `index.html` e converte seu código `.tsx` para JavaScript puro que o navegador entende, tudo isso de forma automática quando a página é carregada.
+Para que a aplicação, escrita em TypeScript (`.tsx`), funcione diretamente em um navegador sem um passo de compilação ("build"), este projeto utiliza uma abordagem inteligente:
 
-Por isso, você **não precisa** de um passo de "build" ou compilação no seu computador.
+1.  **Babel Standalone**: Uma ferramenta é carregada no `index.html` que converte seu código `.tsx` para JavaScript puro que o navegador entende, tudo isso de forma automática quando a página é carregada.
+2.  **Script de Entrada Inline**: O ponto de partida da aplicação foi movido de um arquivo `index.tsx` para dentro de uma tag `<script>` no próprio `index.html`. Isso resolve um problema técnico com o GitHub Pages, que não reconhece a extensão `.tsx` e impedia o carregamento do arquivo.
 
-**Requisito Crítico para Imports:** Para que este método funcione, todas as importações de arquivos locais no seu código **precisam incluir a extensão do arquivo**.
-- **Incorreto:** `import App from './App';`
-- **Correto:** `import App from './App.tsx';`
-
-Isso é necessário para que o navegador saiba exatamente qual arquivo buscar no servidor.
+Com essa configuração, o processo de publicação é extremamente simples: **basta enviar os arquivos para o GitHub**.
 
 ### Passo 1: Crie um Repositório no GitHub
 
