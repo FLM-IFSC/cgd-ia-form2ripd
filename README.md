@@ -6,7 +6,6 @@ Uma aplicação web para auxiliar no mapeamento de atividades de tratamento de d
 
 - **Formulário Inteligente**: Um formulário detalhado para mapear processos de tratamento de dados, com campos condicionais para uma melhor experiência de usuário.
 - **Inventário de Dados**: Geração automática de uma tabela (Inventário de Dados Pessoais - IDP) com todos os processos mapeados.
-- **Exportação para CSV**: Exporte facilmente todo o inventário de dados para um arquivo `.csv`, compatível com Excel e Google Sheets.
 - **Indicador de Risco**: Destaque visual na tabela para processos identificados como de "Alto Risco".
 - **Geração de Rascunho do RIPD**: Para processos de alto risco, um rascunho do Relatório de Impacto é gerado automaticamente em um modal, pronto para análise e download.
 - **Notificações**: Feedbacks visuais para o usuário ao adicionar um novo processo.
@@ -16,10 +15,10 @@ Uma aplicação web para auxiliar no mapeamento de atividades de tratamento de d
 Este projeto foi construído com uma abordagem moderna e sem a necessidade de um *build step* (compilação), o que o torna extremamente leve e fácil de publicar.
 
 - **React 19**: Para a construção da interface de usuário.
-- **JavaScript (ES6+) com JSX**: Código moderno e legível.
+- **TypeScript**: Para adicionar tipagem estática e segurança ao código.
 - **Tailwind CSS**: Para estilização rápida e responsiva, carregado via CDN.
 - **ES Modules Nativos + Import Maps**: Permite o uso de `import` diretamente no navegador, buscando os pacotes de uma CDN (`esm.sh`).
-- **Babel Standalone**: Transpila o código JSX em tempo real, no navegador, permitindo a publicação em hosts estáticos sem um processo de build.
+- **Babel Standalone**: Transpila o código TSX/JSX em tempo real, no navegador, permitindo a publicação em hosts estáticos sem um processo de build.
 
 ---
 
@@ -27,14 +26,17 @@ Este projeto foi construído com uma abordagem moderna e sem a necessidade de um
 
 Siga estes passos para colocar sua aplicação no ar de graça com o GitHub Pages.
 
-### ✅ Por que Funciona Agora (A Solução Definitiva)
+### ⚠️ Nota Importante Sobre a Publicação (Porque não precisa de "deploy")
 
-Para que uma aplicação React com JSX funcione diretamente no navegador sem um passo de compilação ("build"), especialmente no GitHub Pages, a seguinte abordagem foi implementada:
+Sua aplicação usa arquivos `.tsx` (TypeScript com React/JSX), que os navegadores não conseguem ler diretamente. Para que funcione no GitHub Pages, adicionamos uma ferramenta chamada **Babel Standalone**. Ela é carregada no `index.html` e converte seu código `.tsx` para JavaScript puro que o navegador entende, tudo isso de forma automática quando a página é carregada.
 
-1.  **JavaScript Puro + JSX**: Todo o código foi escrito em JavaScript padrão, utilizando a sintaxe JSX para os componentes. Isso elimina a necessidade de transpilar TypeScript, que era a causa dos erros anteriores.
-2.  **Transpilação no Navegador com Babel**: O `index.html` carrega o Babel Standalone, que encontra e converte automaticamente todo o código JSX para JavaScript que o navegador consegue entender e executar.
+Por isso, você **não precisa** de um passo de "build" ou compilação no seu computador.
 
-Com essa configuração robusta, o processo de publicação é o mais simples possível: **basta enviar os arquivos para o GitHub**.
+**Requisito Crítico para Imports:** Para que este método funcione, todas as importações de arquivos locais no seu código **precisam incluir a extensão do arquivo**.
+- **Incorreto:** `import App from './App';`
+- **Correto:** `import App from './App.tsx';`
+
+Isso é necessário para que o navegador saiba exatamente qual arquivo buscar no servidor.
 
 ### Passo 1: Crie um Repositório no GitHub
 
@@ -46,9 +48,9 @@ Com essa configuração robusta, o processo de publicação é o mais simples po
 
 ### Passo 2: Envie os Arquivos para o Repositório
 
-Agora, você precisa enviar todos os arquivos da aplicação (`index.html`, `App.js`, etc.) para o repositório que você acabou de criar.
+Agora, você precisa enviar todos os arquivos da aplicação (`index.html`, `App.tsx`, etc.) para o repositório que você acabou de criar. Você pode fazer isso via linha de comando com `git` ou usando o GitHub Desktop.
 
-Você pode fazer o upload via linha de comando com `git` ou usando o GitHub Desktop. Se não tiver familiaridade, a forma mais simples é:
+Se você não tem familiaridade com `git`, a forma mais simples é:
 1.  No seu repositório no GitHub, clique em **"Add file"** e depois em **"Upload files"**.
 2.  Arraste todos os arquivos do projeto para a área de upload.
 3.  Adicione uma mensagem de commit (ex: "Commit inicial do projeto") e clique em **"Commit changes"**.
