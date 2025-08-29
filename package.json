@@ -1,5 +1,5 @@
 {
-  "name": "lgpd-data-mapping-automation",
+  "name": "ifsc-biometric-security-report-generator",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
