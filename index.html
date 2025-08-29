@@ -4,16 +4,17 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IFSC - Gerador de Relatório Técnico de Biometria</title>
+    <title>IFSC - Mapeamento de Processos LGPD</title>
     
-    <!-- Tailwind CSS for styling -->
+    <!-- Carrega o Tailwind CSS via CDN para estilização rápida e utilitária -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+      // Configuração personalizada do Tailwind para estender o tema padrão
       tailwind.config = {
-        darkMode: 'media',
         theme: {
           extend: {
             colors: {
+              // Adiciona cores personalizadas para a identidade visual do IFSC
               'ifsc-green': '#00844f',
               'ifsc-green-dark': '#006a3e',
             }
@@ -22,27 +23,631 @@
       }
     </script>
 
-    <!-- React Toastify for notifications -->
-    <link rel="stylesheet" href="https://unpkg.com/react-toastify@9.1.3/dist/ReactToastify.min.css">
-    
-    <!-- html-docx-js for reliable DOCX conversion -->
-    <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
-    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <!-- Carrega as bibliotecas React e ReactDOM via CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.1.1/",
-    "react": "https://aistudiocdn.com/react@^19.1.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "react-toastify": "https://aistudiocdn.com/react-toastify@^11.0.5"
-  }
-}
-</script>
+    <!-- Carrega a biblioteca de notificações (Toastify) via CDN -->
+    <script src="https://unpkg.com/react-toastify@9.1.3/dist/ReactToastify.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/react-toastify@9.1.3/dist/ReactToastify.min.css">
+
+
+    <!-- 
+      Babel Standalone: Essencial para a publicação sem um passo de "build".
+      Esta biblioteca transpila o código JSX para JavaScript puro diretamente no navegador.
+    -->
+    <script src="https://unpkg.com/@babel/standalone@7.24.0/babel.min.js"></script>
+
 </head>
-  <body class="bg-gray-100 dark:bg-gray-900">
+  <body class="bg-gray-100">
+    <!-- O elemento 'root' é o container onde a aplicação React será montada -->
     <div id="root"></div>
-    <!-- Main application entry point -->
-    <script type="module" src="/index.tsx"></script>
+    
+    <!-- 
+      Todo o código da aplicação React é colocado aqui dentro.
+      O atributo 'type="text/babel"' instrui o Babel Standalone a transpilar este bloco.
+    -->
+    <script type="text/babel">
+
+// ===================================================================================
+// ARQUIVO: constants.js
+// DESCRIÇÃO: Constantes centralizadas para uso em toda a aplicação.
+// ===================================================================================
+const CATEGORIAS_DADOS_SENSIVEIS = [
+  'Origem racial ou étnica', 'Convicção religiosa', 'Opinião política',
+  'Filiação a sindicato', 'Dado referente à saúde ou à vida sexual', 'Dado genético ou biométrico'
+];
+const CATEGORIAS_TITULARES = [
+  'Alunos', 'Servidores (Docentes/TAEs)', 'Funcionários Terceirizados',
+  'Candidatos a Vagas', 'Visitantes', 'Comunidade Externa'
+];
+const BASES_LEGAIS = [
+  'Consentimento do titular', 'Cumprimento de obrigação legal ou regulatória pelo controlador',
+  'Execução de políticas públicas', 'Estudos por órgão de pesquisa', 'Execução de contrato',
+  'Exercício regular de direitos', 'Proteção da vida', 'Tutela da saúde',
+  'Legítimo interesse do controlador'
+];
+
+
+// ===================================================================================
+// ARQUIVO: components/icons/Icons.js
+// DESCRIÇÃO: Componentes de ícones SVG reutilizáveis.
+// ===================================================================================
+const ShieldCheckIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" />
+  </svg>
+);
+const TableIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 5.25h17.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H3.375c-.621 0-1.125-.504-1.125-1.125V6.375c0-.621.504-1.125 1.125-1.125zM12.75 6.375v11.25M6.375 12h11.25" />
+    </svg>
+);
+const CheckCircleIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
+const ExclamationIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    </svg>
+);
+const PlusIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+);
+const TrashIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.067-2.09.921-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+    </svg>
+);
+const DocumentTextIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+    </svg>
+);
+const XIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+);
+const DownloadIcon = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+    </svg>
+);
+const CsvIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3m4.5 3.75h-3.75m0 0V3.75m0 3.75H15m-3.75 3.75h-3.75m0 0V15m0-3.75H9.75" />
+  </svg>
+);
+
+
+// ===================================================================================
+// ARQUIVO: components/Header.js
+// DESCRIÇÃO: Cabeçalho da aplicação.
+// ===================================================================================
+const Header = () => {
+  return (
+    <header className="bg-ifsc-green text-white shadow-md">
+      <div className="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+        <div className="flex items-center space-x-3">
+          <ShieldCheckIcon className="h-8 w-8" />
+          <div>
+            <h1 className="text-xl font-bold">Automação de Mapeamento de Dados LGPD</h1>
+            <p className="text-sm text-green-200">Plataforma do Instituto Federal de Santa Catarina (IFSC)</p>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+
+// ===================================================================================
+// ARQUIVO: components/ProcessForm.js
+// DESCRIÇÃO: Formulário inteligente para mapeamento de processos.
+// ===================================================================================
+const initialFormData = {
+  nomeProcesso: '', unidadeSetor: '', gestorProcesso: 'Usuário Logado (Exemplo)',
+  descricaoProcesso: '', dataInicioTratamento: '', finalidadeTratamento: '',
+  trataDadosPessoais: 'Sim', trataDadosSensiveis: 'Não', categoriasDadosSensiveis: [],
+  trataDadosCriancasAdolescentes: 'Não', categoriasTitulares: [], dadosPessoaisColetados: '',
+  baseLegal: '', previsaoLegal: '', fonteDados: '', compartilhaDados: 'Não',
+  detalhesCompartilhamento: [], tempoRetencao: '', medidasSeguranca: '', altoRisco: 'Não',
+};
+
+const FormSection = ({ title, children }) => (
+  <div className="p-5 border border-gray-200 rounded-lg bg-white mb-6">
+    <h3 className="text-lg font-semibold text-ifsc-green border-b border-gray-200 pb-2 mb-4">{title}</h3>
+    <div className="space-y-4">{children}</div>
+  </div>
+);
+const InputField = ({ label, id, name, value, onChange, type = 'text', required = false, placeholder }) => (
+  <div>
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
+    <input type={type} id={id} name={name} value={value} onChange={onChange} required={required} placeholder={placeholder} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-ifsc-green focus:border-ifsc-green" />
+  </div>
+);
+const TextareaField = ({ label, id, name, value, onChange, required = false, rows = 3, placeholder }) => (
+  <div>
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
+    <textarea id={id} name={name} value={value} onChange={onChange} required={required} rows={rows} placeholder={placeholder} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-ifsc-green focus:border-ifsc-green"></textarea>
+  </div>
+);
+const RadioGroup = ({ label, name, value, onChange, required = false }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
+    <div className="flex items-center space-x-4 mt-1">
+      <label className="flex items-center"><input type="radio" name={name} value="Sim" checked={value === 'Sim'} onChange={onChange} className="focus:ring-ifsc-green h-4 w-4 text-ifsc-green border-gray-300" /> <span className="ml-2">Sim</span></label>
+      <label className="flex items-center"><input type="radio" name={name} value="Não" checked={value === 'Não'} onChange={onChange} className="focus:ring-ifsc-green h-4 w-4 text-ifsc-green border-gray-300" /> <span className="ml-2">Não</span></label>
+    </div>
+  </div>
+);
+const CheckboxGroup = ({ label, options, selected, onChange, required = false }) => {
+    const handleCheckboxChange = (option) => {
+        const newSelection = selected.includes(option) ? selected.filter(item => item !== option) : [...selected, option];
+        onChange(newSelection);
+    };
+    return (
+        <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
+            <div className="space-y-2 max-h-40 overflow-y-auto border border-gray-200 p-2 rounded-md">
+            {options.map(option => (
+                <label key={option} className="flex items-center">
+                <input type="checkbox" checked={selected.includes(option)} onChange={() => handleCheckboxChange(option)} className="focus:ring-ifsc-green h-4 w-4 text-ifsc-green border-gray-300 rounded" />
+                <span className="ml-2 text-sm text-gray-600">{option}</span>
+                </label>
+            ))}
+            </div>
+        </div>
+    );
+};
+const SelectField = ({ label, id, name, value, onChange, options, required = false }) => (
+    <div>
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
+        <select id={id} name={name} value={value} onChange={onChange} required={required} className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-ifsc-green focus:border-ifsc-green">
+            <option value="">Selecione...</option>
+            {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+    </div>
+);
+
+const ProcessForm = ({ onSubmit }) => {
+  const [formData, setFormData] = React.useState(initialFormData);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (name, selected) => {
+      setFormData(prev => ({...prev, [name]: selected}));
+  }
+  
+  const handleCompartilhamentoChange = (index, field, value) => {
+    const newDetails = [...formData.detalhesCompartilhamento];
+    newDetails[index] = { ...newDetails[index], [field]: value };
+    setFormData(prev => ({ ...prev, detalhesCompartilhamento: newDetails }));
+  };
+
+  const addCompartilhamento = () => {
+    setFormData(prev => ({
+      ...prev,
+      detalhesCompartilhamento: [...prev.detalhesCompartilhamento, { id: Date.now(), orgao: '', finalidade: '' }]
+    }));
+  };
+
+  const removeCompartilhamento = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      detalhesCompartilhamento: prev.detalhesCompartilhamento.filter(item => item.id !== id)
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+    setFormData(initialFormData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Mapeamento de Processo LGPD</h2>
+
+        <FormSection title="A: Identificação do Processo">
+            <InputField label="Nome do Processo/Atividade" id="nomeProcesso" name="nomeProcesso" value={formData.nomeProcesso} onChange={handleChange} required />
+            <InputField label="Unidade/Setor Responsável" id="unidadeSetor" name="unidadeSetor" value={formData.unidadeSetor} onChange={handleChange} required />
+            <InputField label="Gestor do Processo" id="gestorProcesso" name="gestorProcesso" value={formData.gestorProcesso} onChange={handleChange} required />
+            <TextareaField label="Breve Descrição do Processo" id="descricaoProcesso" name="descricaoProcesso" value={formData.descricaoProcesso} onChange={handleChange} required />
+            <InputField label="Data de Início do Tratamento" id="dataInicioTratamento" name="dataInicioTratamento" type="date" value={formData.dataInicioTratamento} onChange={handleChange} />
+        </FormSection>
+
+        <FormSection title="B: Natureza do Tratamento de Dados">
+            <TextareaField label="Finalidade do Tratamento" id="finalidadeTratamento" name="finalidadeTratamento" value={formData.finalidadeTratamento} onChange={handleChange} required />
+            <RadioGroup label="Este processo trata dados pessoais?" name="trataDadosPessoais" value={formData.trataDadosPessoais} onChange={handleChange} required />
+            <RadioGroup label="Este processo trata dados pessoais sensíveis?" name="trataDadosSensiveis" value={formData.trataDadosSensiveis} onChange={handleChange} required />
+            {formData.trataDadosSensiveis === 'Sim' && (
+                <CheckboxGroup label="Quais categorias de dados sensíveis?" options={CATEGORIAS_DADOS_SENSIVEIS} selected={formData.categoriasDadosSensiveis} onChange={(s) => handleCheckboxChange('categoriasDadosSensiveis', s)} />
+            )}
+            <RadioGroup label="Este processo trata dados de crianças ou adolescentes?" name="trataDadosCriancasAdolescentes" value={formData.trataDadosCriancasAdolescentes} onChange={handleChange} required />
+            <CheckboxGroup label="Categorias de Titulares dos Dados" options={CATEGORIAS_TITULARES} selected={formData.categoriasTitulares} onChange={(s) => handleCheckboxChange('categoriasTitulares', s)} required/>
+            <TextareaField label="Dados Pessoais Coletados" id="dadosPessoaisColetados" name="dadosPessoaisColetados" value={formData.dadosPessoaisColetados} onChange={handleChange} required placeholder="Ex: Nome completo, CPF, RG, Endereço..."/>
+        </FormSection>
+
+        <FormSection title="C: Conformidade Legal (LGPD)">
+            <SelectField label="Base Legal para o Tratamento" id="baseLegal" name="baseLegal" value={formData.baseLegal} onChange={handleChange} options={BASES_LEGAIS} required/>
+            <InputField label="Previsão Legal (se aplicável)" id="previsaoLegal" name="previsaoLegal" value={formData.previsaoLegal} onChange={handleChange} placeholder="Ex: Lei nº 9.394/96 (LDB)"/>
+        </FormSection>
+
+        <FormSection title="D: Ciclo de Vida e Segurança do Dado">
+            <InputField label="Fonte dos Dados" id="fonteDados" name="fonteDados" value={formData.fonteDados} onChange={handleChange} placeholder="Ex: Formulário de inscrição online"/>
+            <RadioGroup label="Há compartilhamento de dados com outros órgãos ou entidades?" name="compartilhaDados" value={formData.compartilhaDados} onChange={handleChange} required/>
+            {formData.compartilhaDados === 'Sim' && (
+                <div className="space-y-3 p-3 bg-gray-50 rounded-md border">
+                    <label className="block text-sm font-medium text-gray-700">Com quem e para qual finalidade?</label>
+                    {formData.detalhesCompartilhamento.map((item, index) => (
+                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-2 gap-2 items-end p-2 border rounded-md">
+                            <InputField label={`Órgão/Entidade ${index + 1}`} id={`orgao_${item.id}`} name="orgao" value={item.orgao} onChange={(e) => handleCompartilhamentoChange(index, 'orgao', e.target.value)} />
+                            <div className="flex items-end space-x-2">
+                                <div className="flex-grow">
+                                <InputField label="Finalidade" id={`finalidade_${item.id}`} name="finalidade" value={item.finalidade} onChange={(e) => handleCompartilhamentoChange(index, 'finalidade', e.target.value)} />
+                                </div>
+                                <button type="button" onClick={() => removeCompartilhamento(item.id)} className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                                    <TrashIcon className="h-5 w-5"/>
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    <button type="button" onClick={addCompartilhamento} className="flex items-center space-x-2 text-sm text-ifsc-green hover:text-ifsc-green-dark font-medium">
+                        <PlusIcon className="h-5 w-5"/>
+                        <span>Adicionar Compartilhamento</span>
+                    </button>
+                </div>
+            )}
+            <InputField label="Tempo de Retenção/Armazenamento dos Dados" id="tempoRetencao" name="tempoRetencao" value={formData.tempoRetencao} onChange={handleChange} required placeholder="Ex: 5 anos após o desligamento do aluno"/>
+            <TextareaField label="Medidas de Segurança Técnicas e Administrativas" id="medidasSeguranca" name="medidasSeguranca" value={formData.medidasSeguranca} onChange={handleChange} placeholder="Ex: Controle de acesso, armazenamento seguro..."/>
+        </FormSection>
+
+        <FormSection title="E: Avaliação de Risco (Gatilho para o RIPD)">
+             <RadioGroup label="Este tratamento pode gerar alto risco aos direitos e liberdades dos titulares?" name="altoRisco" value={formData.altoRisco} onChange={handleChange} required/>
+             <p className="text-xs text-gray-500 mt-1">Considera-se alto risco: tratamento em larga escala de dados sensíveis, monitoramento sistemático, uso de tecnologias emergentes, etc.</p>
+        </FormSection>
+
+        <div className="flex justify-end mt-8">
+          <button type="submit" className="px-6 py-3 bg-ifsc-green text-white font-bold rounded-lg shadow-md hover:bg-ifsc-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ifsc-green-dark transition-colors duration-300">
+            Submeter e Mapear Processo
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+};
+
+
+// ===================================================================================
+// ARQUIVO: components/InventoryTable.js
+// DESCRIÇÃO: Tabela do Inventário de Dados.
+// ===================================================================================
+const DataBadge = ({ label }) => (
+    <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{label}</span>
+);
+
+const InventoryTable = ({ processos }) => {
+  const convertToCSV = (data) => {
+    if (data.length === 0) return '';
+    const headers = Object.keys(data[0]);
+    const csvRows = [];
+    csvRows.push(headers.join(','));
+
+    for (const row of data) {
+        const values = headers.map(header => {
+            const escaped = ('' + row[header]).replace(/"/g, '\\"');
+            // Trata arrays e objetos para uma representação simples
+            if (Array.isArray(row[header])) {
+              return `"${row[header].join('; ')}"`;
+            }
+            if (typeof row[header] === 'object' && row[header] !== null) {
+              return `"${JSON.stringify(row[header]).replace(/"/g, '""')}"`;
+            }
+            return `"${escaped}"`;
+        });
+        csvRows.push(values.join(','));
+    }
+    return csvRows.join('\n');
+  };
+
+  const handleExport = () => {
+    const csvData = convertToCSV(processos);
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'inventario_dados_lgpd.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center space-x-3">
+          <TableIcon className="h-6 w-6 text-ifsc-green" />
+          <h2 className="text-2xl font-bold text-gray-800">Inventário de Dados Pessoais (IDP)</h2>
+        </div>
+        {processos.length > 0 && (
+          <button 
+            onClick={handleExport}
+            className="flex items-center space-x-2 px-3 py-2 bg-gray-600 text-white text-sm font-semibold rounded-md hover:bg-gray-700 transition-colors"
+            title="Exportar inventário para CSV"
+          >
+            <CsvIcon className="h-5 w-5" />
+            <span>Exportar CSV</span>
+          </button>
+        )}
+      </div>
+      <div className="overflow-x-auto">
+        {processos.length > 0 ? (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Processo</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unidade</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Base Legal</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risco</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {processos.map((proc) => (
+                <tr key={proc.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{proc.nomeProcesso}</div>
+                    <div className="text-sm text-gray-500">{proc.finalidadeTratamento.substring(0, 40)}...</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{proc.unidadeSetor}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <DataBadge label={proc.baseLegal} />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {proc.altoRisco === 'Sim' ? (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <ExclamationIcon className="h-4 w-4 mr-1" />
+                        Alto Risco
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                         <CheckCircleIcon className="h-4 w-4 mr-1" />
+                        Risco Padrão
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-10 px-6 bg-gray-50 rounded-lg">
+            <p className="text-gray-500">Nenhum processo mapeado ainda.</p>
+            <p className="text-sm text-gray-400 mt-1">Preencha o formulário para começar.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+
+// ===================================================================================
+// ARQUIVO: components/RipdPreviewModal.js
+// DESCRIÇÃO: Modal para visualização e download do rascunho do RIPD.
+// ===================================================================================
+const RipdSection = ({ title, children }) => (
+    <div className="mb-6">
+        <h3 className="text-lg font-bold text-gray-700 border-b-2 border-ifsc-green pb-1 mb-2">{title}</h3>
+        <div className="text-gray-600 prose prose-sm max-w-none">{children}</div>
+    </div>
+);
+const RipdField = ({ label, value }) => (
+    <p><strong>{label}:</strong> {value || <span className="text-gray-400">Não informado</span>}</p>
+);
+
+const RipdPreviewModal = ({ processo, onClose }) => {
+    const generateRipdText = () => {
+        let content = `RELATÓRIO DE IMPACTO À PROTEÇÃO DE DADOS (RIPD) - RASCUNHO\n`;
+        content += `==========================================================\n\n`;
+        content += `1. IDENTIFICAÇÃO\n`;
+        content += `   - Nome do Processo: ${processo.nomeProcesso}\n`;
+        content += `   - Unidade Responsável: ${processo.unidadeSetor}\n`;
+        content += `   - Gestor do Processo: ${processo.gestorProcesso}\n\n`;
+        content += `2. DESCRIÇÃO DO PROCESSO\n`;
+        content += `   - Descrição: ${processo.descricaoProcesso}\n`;
+        content += `   - Finalidade: ${processo.finalidadeTratamento}\n\n`;
+        content += `3. DADOS TRATADOS\n`;
+        content += `   - Categorias de Titulares: ${processo.categoriasTitulares.join(', ')}\n`;
+        content += `   - Dados Pessoais Coletados: ${processo.dadosPessoaisColetados}\n`;
+        content += `   - Tratamento de Dados Sensíveis: ${processo.trataDadosSensiveis}\n`;
+        if (processo.trataDadosSensiveis === 'Sim') {
+             content += `   - Categorias de Dados Sensíveis: ${processo.categoriasDadosSensiveis.join(', ')}\n`;
+        }
+        content += `   - Tratamento de Dados de Crianças/Adolescentes: ${processo.trataDadosCriancasAdolescentes}\n\n`;
+        content += `4. CONFORMIDADE LEGAL\n`;
+        content += `   - Base Legal: ${processo.baseLegal}\n`;
+        content += `   - Previsão Legal Específica: ${processo.previsaoLegal || 'N/A'}\n\n`;
+        content += `5. CICLO DE VIDA E SEGURANÇA\n`;
+        content += `   - Fonte dos Dados: ${processo.fonteDados}\n`;
+        content += `   - Compartilhamento: ${processo.compartilhaDados}\n`;
+        if(processo.compartilhaDados === 'Sim'){
+            processo.detalhesCompartilhamento.forEach(d => {
+                content += `     - Com: ${d.orgao} | Para: ${d.finalidade}\n`;
+            });
+        }
+        content += `   - Tempo de Retenção: ${processo.tempoRetencao}\n`;
+        content += `   - Medidas de Segurança: ${processo.medidasSeguranca}\n\n`;
+        content += `6. ANÁLISE DE NECESSIDADE E PROPORCIONALIDADE\n`;
+        content += `   - [SEÇÃO A SER PREENCHIDA MANUALMENTE PELO DPO E GESTOR DO PROCESSO]\n\n`;
+        content += `7. AVALIAÇÃO DETALHADA DOS RISCOS\n`;
+        content += `   - [SEÇÃO A SER PREENCHIDA MANUALMENTE PELO DPO E GESTOR DO PROCESSO]\n\n`;
+        content += `8. MEDIDAS PARA MITIGAÇÃO DE RISCOS\n`;
+        content += `   - [SEÇÃO A SER PREENCHIDA MANUALMENTE PELO DPO E GESTOR DO PROCESSO]\n\n`;
+        content += `==========================================================\n`;
+        content += `Este documento é um rascunho gerado automaticamente e requer análise e complementação.\n`;
+        return content;
+    };
+
+    const handleDownload = () => {
+        const text = generateRipdText();
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `RIPD_Rascunho_${processo.nomeProcesso.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <header className="flex justify-between items-center p-4 border-b bg-gray-50 rounded-t-lg">
+          <div className="flex items-center space-x-2">
+            <DocumentTextIcon className="h-6 w-6 text-ifsc-green" />
+            <h2 className="text-xl font-bold text-gray-800">Rascunho do RIPD Gerado</h2>
+          </div>
+          <button onClick={onClose} className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded-full">
+            <XIcon className="h-6 w-6" />
+          </button>
+        </header>
+        <main className="p-6 overflow-y-auto">
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
+                <p className="text-yellow-800 text-sm">Um novo processo de tratamento de dados de alto risco foi identificado. O rascunho inicial do RIPD foi gerado e requer sua análise e complementação.</p>
+            </div>
+            <RipdSection title="1. Identificação do Processo">
+                <RipdField label="Nome do Processo" value={processo.nomeProcesso} />
+                <RipdField label="Unidade/Setor Responsável" value={processo.unidadeSetor} />
+                <RipdField label="Gestor do Processo" value={processo.gestorProcesso} />
+            </RipdSection>
+            <RipdSection title="2. Descrição Detalhada">
+                <RipdField label="Descrição" value={processo.descricaoProcesso} />
+                <RipdField label="Finalidade do Tratamento" value={processo.finalidadeTratamento} />
+            </RipdSection>
+            <RipdSection title="3. Natureza dos Dados Tratados">
+                 <RipdField label="Categorias de Titulares" value={processo.categoriasTitulares.join(', ')} />
+                 <RipdField label="Dados Pessoais Coletados" value={processo.dadosPessoaisColetados} />
+                 <RipdField label="Trata Dados Sensíveis" value={processo.trataDadosSensiveis} />
+                 {processo.trataDadosSensiveis === 'Sim' && <RipdField label="Categorias de Dados Sensíveis" value={processo.categoriasDadosSensiveis.join(', ')} />}
+                 <RipdField label="Trata Dados de Crianças/Adolescentes" value={processo.trataDadosCriancasAdolescentes} />
+            </RipdSection>
+            <RipdSection title="4. Base Legal">
+                 <RipdField label="Base Legal para Tratamento" value={processo.baseLegal} />
+                 <RipdField label="Previsão Legal Específica" value={processo.previsaoLegal} />
+            </RipdSection>
+            <RipdSection title="5. Ciclo de Vida do Dado">
+                 <RipdField label="Fonte dos Dados" value={processo.fonteDados} />
+                 <RipdField label="Compartilhamento de Dados" value={processo.compartilhaDados} />
+                 {processo.compartilhaDados === 'Sim' && (
+                     <ul className="list-disc list-inside ml-4">
+                         {processo.detalhesCompartilhamento.map(d => <li key={d.id}><strong>{d.orgao}:</strong> {d.finalidade}</li>)}
+                     </ul>
+                 )}
+                 <RipdField label="Tempo de Retenção" value={processo.tempoRetencao} />
+                 <RipdField label="Medidas de Segurança Implementadas" value={processo.medidasSeguranca} />
+            </RipdSection>
+            <RipdSection title="6. Análise de Necessidade e Proporcionalidade">
+                <p className="text-gray-500 italic p-3 bg-gray-100 rounded-md">[SEÇÃO A SER PREENCHIDA MANUALMENTE PELO DPO E GESTOR DO PROCESSO]</p>
+            </RipdSection>
+            <RipdSection title="7. Avaliação Detalhada dos Riscos">
+                <p className="text-gray-500 italic p-3 bg-gray-100 rounded-md">[SEÇÃO A SER PREENCHida MANUALMENTE PELO DPO E GESTOR DO PROCESSO]</p>
+            </RipdSection>
+        </main>
+        <footer className="p-4 bg-gray-50 border-t rounded-b-lg flex justify-end space-x-3">
+          <button onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+            Fechar
+          </button>
+          <button onClick={handleDownload} className="flex items-center space-x-2 px-4 py-2 bg-ifsc-green text-white font-semibold rounded-md hover:bg-ifsc-green-dark">
+            <DownloadIcon className="h-5 w-5" />
+            <span>Baixar Rascunho (.txt)</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+
+// ===================================================================================
+// ARQUIVO: App.js
+// DESCRIÇÃO: Componente raiz da aplicação.
+// ===================================================================================
+const App = () => {
+  const { useState } = React;
+
+  const [inventario, setInventario] = useState([]);
+  const [selectedProcessForRipd, setSelectedProcessForRipd] = useState(null);
+
+  const handleFormSubmit = (data) => {
+    const newData = { ...data, id: Date.now() };
+    setInventario(prev => [...prev, newData]);
+    
+    // Acesso seguro à biblioteca de notificações
+    if (window.ReactToastify) {
+      window.ReactToastify.toast.success(`Processo "${data.nomeProcesso}" adicionado ao inventário!`);
+
+      if (data.altoRisco === 'Sim') {
+        setSelectedProcessForRipd(newData);
+        window.ReactToastify.toast.info(`Rascunho do RIPD para "${data.nomeProcesso}" foi gerado.`);
+      }
+    }
+  };
+
+  const closeRipdModal = () => {
+    setSelectedProcessForRipd(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-800">
+      <Header />
+      <main className="container mx-auto p-4 md:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-2">
+            <ProcessForm onSubmit={handleFormSubmit} />
+          </div>
+          <div className="lg:col-span-3">
+            <InventoryTable processos={inventario} />
+          </div>
+        </div>
+      </main>
+      {selectedProcessForRipd && (
+        <RipdPreviewModal processo={selectedProcessForRipd} onClose={closeRipdModal} />
+      )}
+      
+      {/* Renderização condicional do ToastContainer para evitar erros */}
+      {window.ReactToastify && <window.ReactToastify.ToastContainer position="bottom-right" autoClose={5000} hideProgressBar={false} />}
+    </div>
+  );
+};
+
+
+// ===================================================================================
+// ARQUIVO: index.js
+// DESCRIÇÃO: Ponto de entrada que renderiza a aplicação.
+// ===================================================================================
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+    </script>
   </body>
 </html>

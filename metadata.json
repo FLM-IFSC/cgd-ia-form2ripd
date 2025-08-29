@@ -1,5 +1,8 @@
 {
-  "name": "IFSC Biometric Security Report Generator",
-  "description": "An assistant application to help document technical and organizational security measures for biometric systems at IFSC, aligned with LGPD and best practices.",
+  "//name": "O nome da aplicação, usado para identificação em plataformas de desenvolvimento.",
+  "name": "LGPD Data Mapping Automation",
+  "//description": "Uma breve descrição da finalidade e funcionalidade da aplicação.",
+  "description": "An application to help map data processing activities according to LGPD (Brazilian General Data Protection Law), generate an inventory, and create draft DPIAs (Data Protection Impact Assessments).",
+  "//requestFramePermissions": "Lista de permissões que a aplicação pode solicitar, como acesso à câmera ou microfone. Vazio neste caso.",
   "requestFramePermissions": []
 }
